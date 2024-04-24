@@ -244,6 +244,18 @@ function startGame() {
   isGameOver = false;
   startBtn.style.display = "none";
 
+  // Clear the grid
+  grid = [];
+  for (let i = 0; i < 20; i++) {
+    grid[i] = [];
+    for (let j = 0; j < 10; j++) {
+      grid[i][j] = 0;
+    }
+  }
+
+  let lostLabel = document.getElementById("label");
+  lostLabel.style.display = "none";
+
   currentPiece = {
     shape: getRandomPiece(),
     color: getRandomColor(),
@@ -253,6 +265,7 @@ function startGame() {
   draw();
   interval = setInterval(moveDown, 1000); // Move down every second
 }
+
 
 startBtn.addEventListener("click", startGame);
 
