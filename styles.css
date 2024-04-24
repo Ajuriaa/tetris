@@ -12,3 +12,8 @@
   width: 300px;
   border: 1px solid black;
 }
+
+#score, #start-button {
+  font-size: 30px;
+  font-weight: bold;
+}

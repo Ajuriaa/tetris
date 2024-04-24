@@ -5,6 +5,7 @@ const blockSize = 30;
 let currentPiece, currentX, currentY;
 let interval;
 let isGameOver = false;
+let score = 0;
 
 // Define the Tetris grid
 let grid = [];
@@ -135,7 +136,10 @@ function moveDown() {
     }
     placePiece();
     // Check for complete rows and clear them
-    clearLines();
+    const linesCleared = clearLines();
+    // Update score
+    score += linesCleared * 100;
+    document.getElementById("score").innerText = `Score: ${score}`;
     // Start a new piece
     currentPiece = {
       shape: getRandomPiece(),
@@ -143,7 +147,6 @@ function moveDown() {
     };
     currentX = 3;
     currentY = 0;
-
   } else {
     currentY++;
     draw();
@@ -200,6 +203,7 @@ function placePiece() {
 
 // Check for complete rows and clear them
 function clearLines() {
+  let linesCleared = 0;
   for (let y = 0; y < 20; y++) {
     let isComplete = true;
     for (let x = 0; x < 10; x++) {
@@ -211,8 +215,10 @@ function clearLines() {
     if (isComplete) {
       grid.splice(y, 1);
       grid.unshift(Array(10).fill(0));
+      linesCleared++;
     }
   }
+  return linesCleared;
 }
 
 // Rotate the piece
@@ -237,6 +243,8 @@ function checkGameOver() {
 // Initialize the game
 function startGame() {
   isGameOver = false;
+  score = 0;
+  document.getElementById("score").innerText = `Score: ${score}`;
   startBtn.style.display = "none";
 
   // Clear the grid
@@ -257,7 +265,6 @@ function startGame() {
   draw();
   interval = setInterval(moveDown, 1000); // Move down every second
 }
-
 
 startBtn.addEventListener("click", startGame);
 
