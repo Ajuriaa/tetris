@@ -13,6 +13,17 @@ for (let i = 0; i < 20; i++) {
   }
 }
 
+// Define colors for Tetris pieces
+const colors = [
+  "cyan",
+  "blue",
+  "orange",
+  "yellow",
+  "lime",
+  "purple",
+  "red",
+];
+
 // Define the Tetris pieces
 const tetrisPieces = [
   // I piece
@@ -61,6 +72,12 @@ function getRandomPiece() {
   return tetrisPieces[randomIndex];
 }
 
+// Function to get a random color
+function getRandomColor() {
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
+}
+
 // Draw the piece
 function drawPiece(piece, xOffset, yOffset, color) {
   for (let y = 0; y < piece.length; y++) {
@@ -83,7 +100,7 @@ function drawGrid() {
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x]) {
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = grid[y][x];
         ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
         ctx.strokeStyle = "white";
         ctx.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
@@ -95,19 +112,22 @@ function drawGrid() {
 // Draw the game board
 function draw() {
   ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
-  drawPiece(currentPiece, currentX, currentY, "blue");
+  drawPiece(currentPiece.shape, currentX, currentY, currentPiece.color);
   drawGrid();
 }
 
 // Move the piece down
 function moveDown() {
-  if (checkCollision(currentPiece, currentX, currentY + 1)) {
+  if (checkCollision(currentPiece.shape, currentX, currentY + 1)) {
     // If there is a collision, stop the piece and place it on the grid
     placePiece();
     // Check for complete rows and clear them
     clearLines();
     // Start a new piece
-    currentPiece = getRandomPiece();
+    currentPiece = {
+      shape: getRandomPiece(),
+      color: getRandomColor(),
+    };
     currentX = 3;
     currentY = 0;
   } else {
@@ -118,7 +138,7 @@ function moveDown() {
 
 // Move the piece left
 function moveLeft() {
-  if (!checkCollision(currentPiece, currentX - 1, currentY)) {
+  if (!checkCollision(currentPiece.shape, currentX - 1, currentY)) {
     currentX--;
     draw();
   }
@@ -126,7 +146,7 @@ function moveLeft() {
 
 // Move the piece right
 function moveRight() {
-  if (!checkCollision(currentPiece, currentX + 1, currentY)) {
+  if (!checkCollision(currentPiece.shape, currentX + 1, currentY)) {
     currentX++;
     draw();
   }
@@ -134,9 +154,9 @@ function moveRight() {
 
 // Rotate the piece
 function rotatePiece() {
-  const rotatedPiece = rotate(currentPiece);
+  const rotatedPiece = rotate(currentPiece.shape);
   if (!checkCollision(rotatedPiece, currentX, currentY)) {
-    currentPiece = rotatedPiece;
+    currentPiece.shape = rotatedPiece;
     draw();
   }
 }
@@ -155,10 +175,10 @@ function checkCollision(piece, x, y) {
 
 // Place the piece on the grid
 function placePiece() {
-  for (let y = 0; y < currentPiece.length; y++) {
-    for (let x = 0; x < currentPiece[y].length; x++) {
-      if (currentPiece[y][x]) {
-        grid[y + currentY][x + currentX] = 1;
+  for (let y = 0; y < currentPiece.shape.length; y++) {
+    for (let x = 0; x < currentPiece.shape[y].length; x++) {
+      if (currentPiece.shape[y][x]) {
+        grid[y + currentY][x + currentX] = currentPiece.color;
       }
     }
   }
@@ -196,7 +216,10 @@ function rotate(piece) {
 
 // Initialize the game
 function startGame() {
-  currentPiece = getRandomPiece();
+  currentPiece = {
+    shape: getRandomPiece(),
+    color: getRandomColor(),
+  };
   currentX = 3;
   currentY = 0;
   draw();
