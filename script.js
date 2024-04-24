@@ -78,10 +78,25 @@ function drawPiece(piece, xOffset, yOffset, color) {
   }
 }
 
+// Draw the grid
+function drawGrid() {
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      if (grid[y][x]) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+        ctx.strokeStyle = "white";
+        ctx.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
+      }
+    }
+  }
+}
+
 // Draw the game board
 function draw() {
   ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
   drawPiece(currentPiece, currentX, currentY, "blue");
+  drawGrid();
 }
 
 // Move the piece down
