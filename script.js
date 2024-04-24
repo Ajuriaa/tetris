@@ -116,15 +116,6 @@ function draw() {
   ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
   drawPiece(currentPiece.shape, currentX, currentY, currentPiece.color);
   drawGrid();
-
-  if (isGameOver) {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, gameBoard.height / 2 - 30, gameBoard.width, 60);
-    ctx.font = "24px Arial";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText("You Lost!", gameBoard.width / 2, gameBoard.height / 2 + 8);
-  }
 }
 
 // Move the piece down
@@ -133,9 +124,13 @@ function moveDown() {
     // If there is a collision, stop the piece and place it on the grid
     if (checkGameOver()) {
       isGameOver = true;
-      let lostLabel = document.getElementById("label");
-      lostLabel.style.display = "block";
       startBtn.style.display = "block";
+      ctx.fillRect(0, gameBoard.height / 2 - 30, gameBoard.width, 60);
+      ctx.fillStyle = "black";
+      ctx.font = "24px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("You Lost!", gameBoard.width / 2, gameBoard.height / 2 + 8);
+      ctx.fillStyle = "white";
       clearInterval(interval);
     }
     placePiece();
@@ -252,9 +247,6 @@ function startGame() {
       grid[i][j] = 0;
     }
   }
-
-  let lostLabel = document.getElementById("label");
-  lostLabel.style.display = "none";
 
   currentPiece = {
     shape: getRandomPiece(),
