@@ -1,8 +1,10 @@
 let gameBoard = document.getElementById("game-board");
 let ctx = gameBoard.getContext("2d");
+let startBtn = document.getElementById("start-button");
 const blockSize = 30;
 let currentPiece, currentX, currentY;
 let interval;
+let isGameOver = false;
 
 // Define the Tetris grid
 let grid = [];
@@ -114,12 +116,28 @@ function draw() {
   ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
   drawPiece(currentPiece.shape, currentX, currentY, currentPiece.color);
   drawGrid();
+
+  if (isGameOver) {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, gameBoard.height / 2 - 30, gameBoard.width, 60);
+    ctx.font = "24px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText("You Lost!", gameBoard.width / 2, gameBoard.height / 2 + 8);
+  }
 }
 
 // Move the piece down
 function moveDown() {
   if (checkCollision(currentPiece.shape, currentX, currentY + 1)) {
     // If there is a collision, stop the piece and place it on the grid
+    if (checkGameOver()) {
+      isGameOver = true;
+      let lostLabel = document.getElementById("label");
+      lostLabel.style.display = "block";
+      startBtn.style.display = "block";
+      clearInterval(interval);
+    }
     placePiece();
     // Check for complete rows and clear them
     clearLines();
@@ -130,6 +148,7 @@ function moveDown() {
     };
     currentX = 3;
     currentY = 0;
+
   } else {
     currentY++;
     draw();
@@ -214,8 +233,17 @@ function rotate(piece) {
   return newPiece;
 }
 
+// Check if the game is over
+function checkGameOver() {
+  const topRow = grid[0];
+  return topRow.some((cell) => cell !== 0);
+}
+
 // Initialize the game
 function startGame() {
+  isGameOver = false;
+  startBtn.style.display = "none";
+
   currentPiece = {
     shape: getRandomPiece(),
     color: getRandomColor(),
@@ -224,9 +252,13 @@ function startGame() {
   currentY = 0;
   draw();
   interval = setInterval(moveDown, 1000); // Move down every second
+}
 
-  // Add event listeners for keyboard input
-  document.addEventListener("keydown", function (event) {
+startBtn.addEventListener("click", startGame);
+
+// Add event listeners for keyboard input
+document.addEventListener("keydown", function (event) {
+  if (!isGameOver) {
     if (event.key === "ArrowLeft") {
       moveLeft();
     } else if (event.key === "ArrowRight") {
@@ -236,7 +268,5 @@ function startGame() {
     } else if (event.key === " ") {
       rotatePiece();
     }
-  });
-}
-
-startGame();
+  }
+});
